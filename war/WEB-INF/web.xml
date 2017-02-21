@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>TOSAD</display-name>
+  <welcome-file-list>
+    <welcome-file>select.jsp</welcome-file>
+  </welcome-file-list>
+  
+  
+  <servlet>
+  	<servlet-name>ExecuteServlet</servlet-name>
+  	<servlet-class>servlets.ExecuteServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>ExecuteServlet</servlet-name>
+  	<url-pattern>/Execute.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+  	<servlet-name>GenerateServlet</servlet-name>
+  	<servlet-class>servlets.GenerateServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>GenerateServlet</servlet-name>
+  	<url-pattern>/Generate.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+  	<servlet-name>InsertTrigger</servlet-name>
+  	<servlet-class>servlets.InsertServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>InsertTrigger</servlet-name>
+  	<url-pattern>/InsertTrigger.do</url-pattern>
+  </servlet-mapping>
+  
+
+  
+</web-app>
