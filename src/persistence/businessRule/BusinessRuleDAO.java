@@ -8,20 +8,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import domain.Attribute;
-import domain.BusinessRule;
-import domain.BusinessRuleType;
-import domain.Operator;
-import domain.Value;
+import domain.*;
 
-public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
+public class BusinessRuleDAO
+{
+	private final BusinsesRuleBaseDAO businsesRuleBaseDAO = new BusinsesRuleBaseDAO();
 	
 	/*-----------------------------------START PRIVATE METHODS--------------------------------------------*/
 	
 	// private method which retrieves multiple business rules
-	private List<BusinessRule> getMultipleRules(String query) {
+	private static List<BusinessRule> getMultipleRules(BusinessRuleDAO businessRuleDAO, String query) {
 		List<BusinessRule> brList = new ArrayList<BusinessRule>();
-		try (Connection con = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+		try (Connection con = DriverManager.getConnection(BusinsesRuleBaseDAO.DB_URL, BusinsesRuleBaseDAO.DB_USERNAME, BusinsesRuleBaseDAO.DB_PASSWORD)) {
 		Statement stmt = con.createStatement();
 		ResultSet rs = stmt.executeQuery(query);
 		String code = "", description = "", table = "", attribute = "", when = "";
@@ -34,13 +32,13 @@ public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
 			int businessRuleTypeID = rs.getInt("businessRuleTypeID");
 			int operatorID = rs.getInt("operatorID");
 			when = rs.getString("trigger_when");	
-			List<Value> values = getValue(businessRuleID);
-			BusinessRule br = new BusinessRule(new Attribute(attribute), code,description, table, when);
+			List<Value> values = BusinessRuleDAO.getValue(businessRuleID);
+			BusinessRule br = new BusinessRuleBuilder().setAtt(new Attribute(attribute)).setCode(code).setDesc(description).setTab(table).setWhen(when).createBusinessRule();
 			for(Value v : values){
 				br.addValue(v);
 			}
-			br.setRuleType(getRuleType(businessRuleTypeID));
-			br.setOperator(getOperator(operatorID));
+			br.setRuleType(businessRuleDAO.getRuleType(businessRuleTypeID));
+			br.setOperator(businessRuleDAO.getOperator(operatorID));
 			brList.add(br);
 		}				
 		} catch (SQLException e) {
@@ -51,7 +49,7 @@ public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
 	
 	// private method which retrieves a single business rule
 	private BusinessRule getBusinessRule(String query){
-		try (Connection con = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+		try (Connection con = DriverManager.getConnection(BusinsesRuleBaseDAO.DB_URL, BusinsesRuleBaseDAO.DB_USERNAME, BusinsesRuleBaseDAO.DB_PASSWORD)) {
 			Statement stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			String code = "", description = "", table = "", attribute = "", when = "";
@@ -65,7 +63,7 @@ public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
 				int operatorID = rs.getInt("operatorID");
 				when = rs.getString("trigger_when");	
 				List<Value> values = getValue(businessRuleID);
-				BusinessRule br = new BusinessRule(new Attribute(attribute), code,description, table, when);
+				BusinessRule br = new BusinessRuleBuilder().setAtt(new Attribute(attribute)).setCode(code).setDesc(description).setTab(table).setWhen(when).createBusinessRule();
 				for(Value v : values){
 					br.addValue(v);
 				}
@@ -82,14 +80,14 @@ public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
 	// private method which retrieves One operator based on his own Id
 	private Operator getOperator(int id){
 		String name = "", abbrev = "";
-		try (Connection con = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+		try (Connection con = DriverManager.getConnection(BusinsesRuleBaseDAO.DB_URL, BusinsesRuleBaseDAO.DB_USERNAME, BusinsesRuleBaseDAO.DB_PASSWORD)) {
 			Statement stmt = con.createStatement();
 			String query = "select name, abbreviation from Operator where operatorId = "+id;
 			ResultSet rs = stmt.executeQuery(query);			
 			while(rs.next()){
 				name = rs.getString("name");
 				abbrev = rs.getString("abbreviation");
-				return new Operator(name, abbrev);
+				return Operator.createOperator(name, abbrev);
 			}			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -99,7 +97,7 @@ public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
 	
 	// private method which retrieves One businessRuleType based on his own Id
 	private BusinessRuleType getRuleType(int id){
-		try (Connection con = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+		try (Connection con = DriverManager.getConnection(BusinsesRuleBaseDAO.DB_URL, BusinsesRuleBaseDAO.DB_USERNAME, BusinsesRuleBaseDAO.DB_PASSWORD)) {
 			Statement stmt = con.createStatement();
 			String query = "select name, abbreviation from BusinessRuleType where businessRuleTypeId = "+id;
 			ResultSet rs = stmt.executeQuery(query);		
@@ -115,9 +113,9 @@ public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
 	}
 	
 	// private method which retrieves all the values based on the business rule id
-	private List<Value> getValue(int id) throws SQLException{
+	private static List<Value> getValue(int id) throws SQLException{
 		List<Value> vList = new ArrayList<Value>();
-		try(Connection con = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)){
+		try(Connection con = DriverManager.getConnection(BusinsesRuleBaseDAO.DB_URL, BusinsesRuleBaseDAO.DB_USERNAME, BusinsesRuleBaseDAO.DB_PASSWORD)){
 			Statement stmt = con.createStatement();
 			String query = "select value from Value where businessRuleID = " + id;
 			ResultSet rs = stmt.executeQuery(query);		
@@ -132,11 +130,11 @@ public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
 	
 	
 	/*------------------------------------START PUBLIC METHODS--------------------------------------------*/
-	
-	public List<BusinessRule> getAllBusinessRules(){
+
+	public static List<BusinessRule> getAllBusinessRules(BusinessRuleDAO businessRuleDAO){
 		String query = 
 				 "select businessruleid, code, description, table_name, attribute, businessruletypeid, operatorid, trigger_when from BUSINESSRULE";
-		return getMultipleRules(query);
+		return getMultipleRules(businessRuleDAO, query);
 	}
 	
 	public BusinessRule searchByCode(String code){
@@ -146,7 +144,7 @@ public class BusinessRuleDAO extends BusinsesRuleBaseDAO{
 	
 	public List<BusinessRule> searchMultipleByCode(String code){
 		String query = "select businessruleid, code, description, table_name, attribute, businessruletypeid, operatorid, trigger_when from BusinessRule where code LIKE '"+code+"%'";
-		return getMultipleRules(query);
+		return getMultipleRules(this, query);
 	}
 
 	/*------------------------------------END PUBLIC METHODS----------------------------------------------*/

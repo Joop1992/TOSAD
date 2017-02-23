@@ -23,7 +23,7 @@ public class GenerateServlet extends HttpServlet {
 		if(code == null || code.equals("null")){
 			code = "";
 		}
-		generatedCodes = gc.generate(code, language);
+		generatedCodes = gc.generate(new GeneratorController.GenerateParameter(code, language));
 		
 	/*	
 		try {

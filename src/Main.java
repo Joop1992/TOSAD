@@ -1,8 +1,4 @@
-import domain.Attribute;
-import domain.BusinessRule;
-import domain.BusinessRuleType;
-import domain.Operator;
-import domain.Value;
+import domain.*;
 import generator.Generator;
 import generator.GeneratorPLSQL;
 
@@ -40,7 +36,7 @@ public class Main {
 		
 		*/
 		BusinessRuleType brt = new BusinessRuleType("attribute list","ALIS");
-		Operator o = new Operator("In List", "INL");
+		Operator o = Operator.createOperator("In List", "INL");
 		
 		brt.addOperator(o);
 		Value v = new Value("allah,hu,akbar,shalam,attack");
@@ -50,7 +46,7 @@ public class Main {
 		
 	//	Attribute ac = new Attribute("welAttribuut");
 		
-		BusinessRule br = new BusinessRule("BRG_VBMG_ALIS_KLTN_AI_02", "description","newTable","before delete");
+		BusinessRule br = new BusinessRuleBuilder().setCode("BRG_VBMG_ALIS_KLTN_AI_02").setDesc("description").setTab("newTable").setWhen("before delete").createBusinessRule();
 		
 		br.setOperator(o);
 
