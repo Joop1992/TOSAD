@@ -5,7 +5,27 @@ package domain;
  */
 public class MiddleMan
 {
-    public int getId(){
-        return 5;
+    public class Foo {
+        Bar bar;
+
+        public Bar getBar()
+        {
+            return bar;
+        }
+    }
+
+    public class Bar {
+        private Foo impValue1;
+        public Bar(Foo impValue) {
+            impValue1 = impValue;
+        }
+        public Foo getImpValue() {
+            return impValue1;
+        }
+    }
+
+    public class Client {
+        Foo a;
+        Foo impValue = a.getBar().getImpValue();
     }
 }
