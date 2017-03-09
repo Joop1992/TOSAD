@@ -19,6 +19,5 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="ST-4.0.8" level="project" />
   </component>
 </module>

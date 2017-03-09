@@ -7,7 +7,8 @@ import domain.BusinessRule;
 import generator.Generator;
 
 public class GeneratorController {
-	public List<String> generate(GenerateParameter generateParameter) {
+	public List<String> generate(GenerateParameter generateParameter) throws ClassNotFoundException,
+			IllegalAccessException, InstantiationException {
 		ArrayList<String> generatedList = new ArrayList<String>();
 		List<BusinessRule> rulesToGenerate;
 		Controller controller = new Controller();
@@ -24,11 +25,7 @@ public class GeneratorController {
 		//generically creating the Generator with specified language.
 		String generatorName = "generator.Generator"+ generateParameter.getLanguage().toUpperCase();
 		Generator g = null;
-		try {
-			g = (Generator) Class.forName(generatorName).newInstance();
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		g = (Generator) Class.forName(generatorName).newInstance();
 		
 		
 		//generate the single rules, add them to string aray
