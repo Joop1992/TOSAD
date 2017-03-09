@@ -141,7 +141,7 @@ public class GeneratorPLSQL implements Generator
                 // add the finalSubTemplate to our super template
                 try
                 {
-                    superTemplate.add("subTemplate", subTemplate);
+                    addSubToSuperTemplate(subTemplate);
                 } catch (IllegalArgumentException iae)
                 {
                 }
@@ -184,7 +184,7 @@ public class GeneratorPLSQL implements Generator
 
                 try
                 {
-                    superTemplate.add("subTemplate", subTemplate);
+                    addSubToSuperTemplate(subTemplate);
                 } catch (IllegalArgumentException iae)
                 {
                 }
@@ -203,6 +203,10 @@ public class GeneratorPLSQL implements Generator
         {
             return "";
         }
+    }
+
+    private void addSubToSuperTemplate(String subTemplate) {
+        superTemplate.add("subTemplate", subTemplate);
     }
 
     private class TemplateGetter
